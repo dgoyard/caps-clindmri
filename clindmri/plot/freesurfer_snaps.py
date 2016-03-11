@@ -6,9 +6,10 @@ import shutil
 
 
 def freesurfer_snaps_wm(fsdir, sid, axis=["C", "A", "S"],
-                        slice_interval=[35, 215],
+                        slice_interval=[0, 255],
                         output_directory=None,
-                        fsconfig="/i2bm/local/freesurfer/SetUpFreeSurfer.sh"):
+                        fsconfig="/i2bm/local/freesurfer/SetUpFreeSurfer.sh",
+                        logfile=None):
     """
     plot snaps from freesurfer segmentation, using freesurfer tkmedit
 
@@ -76,16 +77,12 @@ def freesurfer_snaps_wm(fsdir, sid, axis=["C", "A", "S"],
                              "{}.png".format(snap.split(".")[0]))])
             os.remove(os.path.join(output_directory, sid, snap))
     except:
-        logfile = "/volatile/local_disk/freesurfer/out_aims/errors.log"
-        with open(logfile, "a") as _file:
-            _file.write("{}\n".format(sid))
-
-
-if __name__ == "__main__":
-    fsdir = "/neurospin/eu-aims/PROCESS/MRI/LEAP_V01/freesurfer/data"
-    outdir = "/volatile/local_disk/freesurfer/out_aims"
-    for subject in os.listdir(fsdir):
-        freesurfer_snaps_wm(
-            fsdir,
-            subject,
-            output_directory=outdir)
+        if logfile is not None:
+            if os.path.isfile(logfile):
+                arg = "a"
+            else:
+                arg = "w"
+            with open(logfile, arg) as _file:
+                _file.write("{}\n".format(sid))
+        else:
+            pass
